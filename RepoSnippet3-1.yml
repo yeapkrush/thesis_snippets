@@ -1,0 +1,37 @@
+# Defining the CI/CD workflow
+
+jobs:
+    # This workflow contains multiple tasks: build, test, and deploy
+    build-test-and-deploy:
+      # The type of runner that the job will run on
+      runs-on: ubuntu-latest
+
+      # Steps represent a sequence of tasks that will be executed as 
+      #  part of the job
+      steps:
+        # Checks-out repository under $GITHUB_WORKSPACE, so the 
+        #  job can access it
+        - name: Checkout Repo
+          uses: actions/checkout@v2
+
+        # Install the dependencies of the project
+        - name: Install Dependencies
+          run: npm install
+          
+        # Install the dependencies inside the functions folder
+        - name: Install Dependencies in functions
+          run: npm install
+          working-directory: functions
+          
+        # Run tests inside the functions folder
+        - name: Test the functions
+          run: npm test
+          working-directory: functions
+
+        # Deploy to Firebase if there are no errors
+        - name: Deploy to Firebase
+          uses: w9jds/firebase-action@master
+          with:
+            args: deploy
+          env:
+            FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
